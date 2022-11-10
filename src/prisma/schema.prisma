@@ -7,12 +7,173 @@ generator client {
     provider = "prisma-client-js"
 }
 
+model User {
+    id          Int           @id @default(autoincrement())
+    username    String        @unique @db.VarChar(32)
+    password    String        @db.VarChar(64)
+    email       String        @unique
+    displayName String        @unique @db.VarChar(32)
+    slogan      String        @db.VarChar(100)
+    coverURL    String?
+    protraitURL String?
+    createdAt   DateTime      @default(now())
+    Team        Team[]
+    TeamMember  TeamMember[]
+    TeamRequest TeamRequest[]
+    Tournament  Tournament[]
+}
+
+model Game {
+    id         Int          @id @default(autoincrement())
+    gameName   String       @unique
+    lineUpCap  Int
+    coverURL   String?
+    logoURL    String?
+    Team       Team[]
+    Tournament Tournament[]
+}
+
 model Team {
-    id         Int      @id @default(autoincrement())
-    teamName   String
-    slogan     String
-    teamDetail String
-    picURL     String
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+    id               Int                @id @default(autoincrement())
+    teamName         String
+    slogan           String?
+    description      String?
+    coverURL         String?
+    logoURL          String?
+    currentMember    Int
+    gameId           Int
+    Game             Game               @relation(fields: [gameId], references: [id])
+    ownerId          Int
+    User             User               @relation(fields: [ownerId], references: [id])
+    createAt         DateTime           @default(now())
+    TeamMember       TeamMember[]
+    TeamRequest      TeamRequest[]
+    MatchHome        Match[]            @relation("teamHome")
+    MatchAway        Match[]            @relation("teamAway")
+    TournamentJoined TournamentJoined[]
+    TournamentRank   TournamentRank[]
+}
+
+enum Role {
+    MANAGER
+    PLAYER
+}
+
+model TeamMember {
+    id     Int      @id @default(autoincrement())
+    teamId Int     
+    team   Team     @relation(fields: [teamId], references: [id])
+    userId Int
+    User   User     @relation(fields: [userId], references: [id])
+    Role   Role     @default(PLAYER)
+    joinAt DateTime @default(now())
+}
+
+enum ReqStatus {
+    PENDDING
+    ACCEPTED
+}
+
+model TeamRequest {
+    id     Int       @id @default(autoincrement())
+    teamId Int
+    Team   Team      @relation(fields: [teamId], references: [id])
+    userId Int
+    User   User      @relation(fields: [userId], references: [id])
+    status ReqStatus @default(PENDDING)
+    sendAt DateTime  @default(now())
+}
+
+enum TourStatus {
+    REGISTER
+    STARTED
+    END
+}
+
+model Tournament {
+    id               Int                @id @default(autoincrement())
+    tourName         String             @unique @db.VarChar(100)
+    tourCap          Int
+    currentJoin      Int                @default(0)
+    coverUrl         String?
+    prize            Int
+    regStartTime     DateTime
+    regEndTime       DateTime
+    tourStartTime    DateTime
+    tourEndTime      DateTime
+    gameId           Int
+    Game             Game               @relation(fields: [gameId], references: [id])
+    ownerId          Int
+    User             User               @relation(fields: [ownerId], references: [id])
+    status           TourStatus         @default(REGISTER)
+    rule             String?
+    createAt         DateTime           @default(now())
+    Match            Match[]
+    TournamentJoined TournamentJoined[]
+    TournamentRank   TournamentRank[]
+}
+
+model Match {
+    id          Int           @id @default(autoincrement())
+    tourId      Int
+    Tournament  Tournament    @relation(fields: [tourId], references: [id])
+    date        DateTime
+    round       String
+    pair        String
+    teamHomeId  Int
+    TeamHome    Team          @relation(fields: [teamHomeId], references: [id], name: "teamHome")
+    teamAwayId  Int
+    TeamAway    Team          @relation(fields: [teamAwayId], references: [id], name: "teamAway")
+    MatchResult MatchResult[]
+    MatchDetail MatchDetail[]
+}
+
+model TournamentJoined {
+    id         Int        @id @default(autoincrement())
+    tourId     Int
+    Tournament Tournament @relation(fields: [tourId], references: [id])
+    teamId     Int
+    Team       Team       @relation(fields: [teamId], references: [id])
+    joinedAt   DateTime   @default(now())
+
+    @@unique([tourId, teamId])
+}
+
+model TournamentRank {
+    id          Int        @id @default(autoincrement())
+    tourId      Int
+    Tournamanet Tournament @relation(fields: [tourId], references: [id])
+    teamId      Int
+    Team        Team       @relation(fields: [teamId], references: [id])
+    rank        Int
+
+    @@unique([tourId, teamId])
+}
+
+enum WinningTeam {
+    HOME
+    AWAY
+}
+
+model MatchResult {
+    id            Int         @id @default(autoincrement())
+    matchId       Int
+    Match         Match       @relation(fields: [matchId], references: [id])
+    teamHomeScore Int
+    teamAwayScore Int
+    winningTeam   WinningTeam
+}
+
+enum UploadStatus {
+    WAITING
+    UPLOADED
+}
+
+model MatchDetail {
+    id      Int          @id @default(autoincrement())
+    matchId Int
+    Match   Match        @relation(fields: [matchId], references: [id])
+    imgUrl  String?
+    gameNum Int
+    status  UploadStatus @default(WAITING)
 }
