@@ -12,10 +12,10 @@ model User {
     username    String        @unique @db.VarChar(32)
     password    String        @db.VarChar(64)
     email       String        @unique
-    displayName String        @unique @db.VarChar(32)
-    slogan      String        @db.VarChar(100)
-    coverURL    String?
-    protraitURL String?
+    displayName String?        @unique @db.VarChar(32)
+    slogan      String?       @db.VarChar(100)
+    coverUrl    String?
+    protraitUrl String?
     createdAt   DateTime      @default(now())
     Team        Team[]
     TeamMember  TeamMember[]
@@ -27,8 +27,8 @@ model Game {
     id         Int          @id @default(autoincrement())
     gameName   String       @unique
     lineUpCap  Int
-    coverURL   String?
-    logoURL    String?
+    coverUrl   String?
+    logoUrl    String?
     Team       Team[]
     Tournament Tournament[]
 }
@@ -38,8 +38,8 @@ model Team {
     teamName         String
     slogan           String?
     description      String?
-    coverURL         String?
-    logoURL          String?
+    coverUrl         String?
+    logoUrl          String?
     currentMember    Int
     gameId           Int
     Game             Game               @relation(fields: [gameId], references: [id])
@@ -136,7 +136,7 @@ model TournamentJoined {
     Team       Team       @relation(fields: [teamId], references: [id])
     joinedAt   DateTime   @default(now())
 
-    @@unique([tourId, teamId])
+    @@unique([tourId, teamId], name: "teamInTour")
 }
 
 model TournamentRank {
@@ -147,7 +147,7 @@ model TournamentRank {
     Team        Team       @relation(fields: [teamId], references: [id])
     rank        Int
 
-    @@unique([tourId, teamId])
+    @@unique([tourId, teamId], name: "teamInTour")
 }
 
 enum WinningTeam {
