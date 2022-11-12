@@ -12,7 +12,7 @@ model User {
     username    String        @unique @db.VarChar(32)
     password    String        @db.VarChar(64)
     email       String        @unique
-    displayName String?        @unique @db.VarChar(32)
+    displayName String?       @unique @db.VarChar(32)
     slogan      String?       @db.VarChar(100)
     coverUrl    String?
     protraitUrl String?

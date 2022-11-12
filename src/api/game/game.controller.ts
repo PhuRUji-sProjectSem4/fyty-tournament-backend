@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
-import { Game, Prisma } from '@prisma/client';
+import { Game } from '@prisma/client';
 import { AddGameDto } from 'src/dto/game.dto';
 import { GameService } from './game.service';
 
@@ -18,7 +18,7 @@ export class GameController {
     }
 
     @Post()
-    async addGame(@Body() payload: AddGameDto) {
+    async addGame(@Body() payload: AddGameDto): Promise<Game> {
         return this.gameService.addGame(payload);
     }
 

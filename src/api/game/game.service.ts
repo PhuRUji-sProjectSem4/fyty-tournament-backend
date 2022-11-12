@@ -1,5 +1,5 @@
-import { BadRequestException, Controller, Injectable } from '@nestjs/common';
-import { Game, Prisma } from '@prisma/client';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Game } from '@prisma/client';
 import { AddGameDto } from 'src/dto/game.dto';
 import { PrismaService } from 'src/prisma.service';
 
@@ -27,8 +27,6 @@ export class GameService {
 
     async addGame(payload: AddGameDto): Promise<Game>{
         try{
-            console.log(payload);
-            
             return await this.prisma.game.create({data: payload});
         }
         catch(error){
