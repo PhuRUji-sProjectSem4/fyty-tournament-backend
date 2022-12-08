@@ -13,7 +13,7 @@ export class GameController {
     }
 
     @Get(":id")
-    async getGame(@Param("id", ParseIntPipe) gameId: number): Promise<Game>{
+    async getGame(@Param("id") gameId: Game['id']): Promise<Game>{
         return this.gameService.getGame(gameId);
     }
 
@@ -22,8 +22,13 @@ export class GameController {
         return this.gameService.addGame(payload);
     }
 
+    @Post("/all")
+    async addManyGame():Promise<Game[]> {
+        return this.gameService.addManyGame();
+    }
+
     @Delete(":id")
-    async deleteGame(@Param("id", ParseIntPipe) gameId: number): Promise<Game>{
+    async deleteGame(@Param("id") gameId: Game['id']): Promise<Game>{
         return await this.gameService.deleteGame(gameId);
     }
 }

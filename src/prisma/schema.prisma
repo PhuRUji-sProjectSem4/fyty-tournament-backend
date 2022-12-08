@@ -8,7 +8,7 @@ generator client {
 }
 
 model User {
-    id          Int           @id @default(autoincrement())
+    id          String        @id @default(uuid())
     username    String        @unique @db.VarChar(32)
     password    String        @db.VarChar(64)
     email       String        @unique
@@ -24,7 +24,7 @@ model User {
 }
 
 model Game {
-    id         Int          @id @default(autoincrement())
+    id         String       @id @default(uuid())
     gameName   String       @unique
     lineUpCap  Int
     coverUrl   String?
@@ -33,18 +33,24 @@ model Game {
     Tournament Tournament[]
 }
 
+enum TeamStaus {
+    NOTDELETE
+    DELETED
+}
+
 model Team {
-    id               Int                @id @default(autoincrement())
+    id               String             @id @default(uuid())
     teamName         String
     slogan           String?
     description      String?
     coverUrl         String?
     logoUrl          String?
     currentMember    Int
-    gameId           Int
+    gameId           String
     Game             Game               @relation(fields: [gameId], references: [id])
-    ownerId          Int
+    ownerId          String
     User             User               @relation(fields: [ownerId], references: [id])
+    status           TeamStaus          @default(NOTDELETE)
     createAt         DateTime           @default(now())
     TeamMember       TeamMember[]
     TeamRequest      TeamRequest[]
@@ -57,16 +63,19 @@ model Team {
 enum Role {
     MANAGER
     PLAYER
+    COACH
+    LEFT
 }
 
 model TeamMember {
-    id     Int      @id @default(autoincrement())
-    teamId Int     
-    team   Team     @relation(fields: [teamId], references: [id])
-    userId Int
-    User   User     @relation(fields: [userId], references: [id])
-    Role   Role     @default(PLAYER)
-    joinAt DateTime @default(now())
+    id       String   @id @default(uuid())
+    teamId   String
+    team     Team     @relation(fields: [teamId], references: [id])
+    userId   String
+    User     User     @relation(fields: [userId], references: [id])
+    Role     Role     @default(PLAYER)
+    updateAt DateTime @updatedAt
+    joinAt   DateTime @default(now())
 }
 
 enum ReqStatus {
@@ -75,10 +84,10 @@ enum ReqStatus {
 }
 
 model TeamRequest {
-    id     Int       @id @default(autoincrement())
-    teamId Int
+    id     String    @id @default(uuid())
+    teamId String
     Team   Team      @relation(fields: [teamId], references: [id])
-    userId Int
+    userId String
     User   User      @relation(fields: [userId], references: [id])
     status ReqStatus @default(PENDDING)
     sendAt DateTime  @default(now())
@@ -91,7 +100,7 @@ enum TourStatus {
 }
 
 model Tournament {
-    id               Int                @id @default(autoincrement())
+    id               String             @id @default(uuid())
     tourName         String             @unique @db.VarChar(100)
     tourCap          Int
     currentJoin      Int                @default(0)
@@ -101,9 +110,9 @@ model Tournament {
     regEndTime       DateTime
     tourStartTime    DateTime
     tourEndTime      DateTime
-    gameId           Int
+    gameId           String
     Game             Game               @relation(fields: [gameId], references: [id])
-    ownerId          Int
+    ownerId          String
     User             User               @relation(fields: [ownerId], references: [id])
     status           TourStatus         @default(REGISTER)
     rule             String?
@@ -114,25 +123,25 @@ model Tournament {
 }
 
 model Match {
-    id          Int           @id @default(autoincrement())
-    tourId      Int
+    id          String        @id @default(uuid())
+    tourId      String
     Tournament  Tournament    @relation(fields: [tourId], references: [id])
     date        DateTime
     round       String
     pair        String
-    teamHomeId  Int
+    teamHomeId  String
     TeamHome    Team          @relation(fields: [teamHomeId], references: [id], name: "teamHome")
-    teamAwayId  Int
+    teamAwayId  String
     TeamAway    Team          @relation(fields: [teamAwayId], references: [id], name: "teamAway")
     MatchResult MatchResult[]
     MatchDetail MatchDetail[]
 }
 
 model TournamentJoined {
-    id         Int        @id @default(autoincrement())
-    tourId     Int
+    id         String     @id @default(uuid())
+    tourId     String
     Tournament Tournament @relation(fields: [tourId], references: [id])
-    teamId     Int
+    teamId     String
     Team       Team       @relation(fields: [teamId], references: [id])
     joinedAt   DateTime   @default(now())
 
@@ -140,10 +149,10 @@ model TournamentJoined {
 }
 
 model TournamentRank {
-    id          Int        @id @default(autoincrement())
-    tourId      Int
+    id          String     @id @default(uuid())
+    tourId      String
     Tournamanet Tournament @relation(fields: [tourId], references: [id])
-    teamId      Int
+    teamId      String
     Team        Team       @relation(fields: [teamId], references: [id])
     rank        Int
 
@@ -156,8 +165,8 @@ enum WinningTeam {
 }
 
 model MatchResult {
-    id            Int         @id @default(autoincrement())
-    matchId       Int
+    id            String      @id @default(uuid())
+    matchId       String
     Match         Match       @relation(fields: [matchId], references: [id])
     teamHomeScore Int
     teamAwayScore Int
@@ -170,8 +179,8 @@ enum UploadStatus {
 }
 
 model MatchDetail {
-    id      Int          @id @default(autoincrement())
-    matchId Int
+    id      String       @id @default(uuid())
+    matchId String
     Match   Match        @relation(fields: [matchId], references: [id])
     imgUrl  String?
     gameNum Int
