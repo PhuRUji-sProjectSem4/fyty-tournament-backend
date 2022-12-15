@@ -45,7 +45,7 @@ model Team {
     description      String?
     coverUrl         String?
     logoUrl          String?
-    currentMember    Int
+    currentMember    Int                @default(1)
     gameId           String
     Game             Game               @relation(fields: [gameId], references: [id])
     ownerId          String

@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { Game } from '@prisma/client';
 import { AddGameDto } from 'src/dto/game.dto';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { GameService } from './game.service';
 
 @Controller('game')
