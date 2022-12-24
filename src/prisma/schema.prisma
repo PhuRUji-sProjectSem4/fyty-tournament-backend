@@ -73,7 +73,7 @@ model TeamMember {
     team     Team     @relation(fields: [teamId], references: [id])
     userId   String
     User     User     @relation(fields: [userId], references: [id])
-    Role     Role     @default(PLAYER)
+    role     Role     @default(PLAYER)
     updateAt DateTime @updatedAt
     joinAt   DateTime @default(now())
 }
@@ -81,6 +81,7 @@ model TeamMember {
 enum ReqStatus {
     PENDDING
     ACCEPTED
+    DECLINED
 }
 
 model TeamRequest {
@@ -94,6 +95,7 @@ model TeamRequest {
 }
 
 enum TourStatus {
+    CHECKING
     REGISTER
     STARTED
     END
