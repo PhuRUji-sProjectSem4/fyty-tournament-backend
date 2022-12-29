@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
+import { Subject } from 'src/common/subject.decorator';
 import { AddUserDto } from 'src/dto/user.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { UserService } from './user.service';
@@ -20,7 +21,14 @@ export class UserController {
         return this.userService.getUser(userId);
     }
 
-    //@Get("me")
+    
+    @Get("me")
+    @UseGuards(JwtAuthGuard)
+    async getMe(@Subject() subject: User): Promise<User>{
+        return subject;
+    }
+
+
     //@Put("me")
     
     @Post('register')

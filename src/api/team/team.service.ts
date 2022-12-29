@@ -22,7 +22,7 @@ export class TeamService {
             return await this.prisma.team.findUniqueOrThrow({where:{id: teamId}});
         }
         catch(error){
-            throw new BadRequestException(error.massage);
+            throw new BadRequestException(error.message);
         }
     }
 
@@ -31,7 +31,7 @@ export class TeamService {
             return await this.prisma.team.findMany({where:{gameId: gameId}});
         }
         catch(error){
-            throw new BadRequestException(error.massage);
+            throw new BadRequestException(error.message);
         }
     }
 

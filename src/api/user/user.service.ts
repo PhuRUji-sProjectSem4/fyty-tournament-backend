@@ -13,7 +13,7 @@ export class UserService {
             return await this.prisma.user.findMany();
         }
         catch(error){
-            throw new BadRequestException(error.massage);
+            throw new BadRequestException(error.message);
         }
     }
 
@@ -33,7 +33,7 @@ export class UserService {
             return await this.prisma.user.create({data: payload});
         }
         catch(error){
-            throw new BadRequestException(error.massage);
+            throw new BadRequestException(error.message);
         }
 }
 

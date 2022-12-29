@@ -18,7 +18,7 @@ export class GameService {
             return await this.prisma.game.findUniqueOrThrow({where: { id: gameId }});
         }
         catch(error){
-            throw new BadRequestException(error.massage);
+            throw new BadRequestException(error.message);
         }
     }
 
@@ -27,7 +27,7 @@ export class GameService {
             return await this.prisma.game.create({data: payload});
         }
         catch(error){
-            throw new BadRequestException(error.massage);
+            throw new BadRequestException(error.message);
         }
     }
 
@@ -41,7 +41,7 @@ export class GameService {
                ], skipDuplicates: true, })
         }
         catch(error){
-            throw new BadRequestException(error.massage);
+            throw new BadRequestException(error.message);
         }
     }
     
@@ -50,7 +50,7 @@ export class GameService {
             return await this.prisma.game.delete({where: { id: gameId }});
         }
         catch(error){
-            throw new BadRequestException(error.massage);
+            throw new BadRequestException(error.message);
         }
     }
 }
