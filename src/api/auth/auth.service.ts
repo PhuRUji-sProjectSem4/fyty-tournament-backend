@@ -22,7 +22,12 @@ export class AuthService {
     }
 
     async getUserById(id: User["id"]) {
-        return await this.prisma.user.findUniqueOrThrow({ where: { id } });
+        try{
+            return await this.prisma.user.findUniqueOrThrow({ where: { id } });
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
+        }
     }
 
     private async validateUser(user: User, password: User['password']){

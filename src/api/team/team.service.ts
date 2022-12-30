@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { Game, Team, TeamStaus } from '@prisma/client';
-import { AddTeamDto } from 'src/dto/team.dto';
+import { AddTeamDto, UpdateTeamDto } from 'src/dto/team.dto';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
@@ -44,6 +44,20 @@ export class TeamService {
         }
     }
 
+    async updateTeam(teamId: Team["id"], payload: UpdateTeamDto): Promise<Team>{
+        try{
+            return await this.prisma.team.update({
+                where: {
+                    id: teamId
+                },
+                data: payload
+            });
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
+        }
+    }
+
     async deleteTeam(teamId: Team["id"]): Promise<Team>{
         try{
             return await this.prisma.team.update({
@@ -54,6 +68,19 @@ export class TeamService {
                     status: TeamStaus.DELETED
                 }
             });
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
+        }
+    }
+
+    async realDeleteTeam(teamId: Team["id"]): Promise<Team>{
+        try{
+            return await this.prisma.team.delete({
+                where: {
+                    id: teamId
+                }
+            })
         }
         catch(error){
             throw new BadRequestException(error.message);

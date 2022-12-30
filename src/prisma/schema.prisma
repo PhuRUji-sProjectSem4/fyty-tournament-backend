@@ -40,7 +40,7 @@ enum TeamStaus {
 
 model Team {
     id               String             @id @default(uuid())
-    teamName         String
+    teamName         String             @unique
     slogan           String?
     description      String?
     coverUrl         String?

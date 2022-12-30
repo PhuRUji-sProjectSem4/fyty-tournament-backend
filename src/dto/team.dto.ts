@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
 import { TeamStaus } from "@prisma/client";
 import { Transform } from "class-transformer";
 import { IsString } from "class-validator";
@@ -39,3 +39,5 @@ export class AddTeamDto {
     @ApiPropertyOptional()
     createdAt: Date;
 }
+
+export class UpdateTeamDto extends PartialType(AddTeamDto) {}
