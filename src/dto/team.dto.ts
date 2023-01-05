@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
-import { TeamStaus } from "@prisma/client";
+import { Prisma, ReqStatus, Role, TeamStaus } from "@prisma/client";
 import { Transform } from "class-transformer";
-import { IsString } from "class-validator";
+import { isString, IsString } from "class-validator";
 
 
 export class AddTeamDto {
@@ -41,3 +41,34 @@ export class AddTeamDto {
 }
 
 export class UpdateTeamDto extends PartialType(AddTeamDto) {}
+
+export class AddTeamMemberDto {
+    @ApiProperty()
+    @IsString()
+    teamId: string;
+
+    @ApiProperty()
+    @IsString()
+    userId: string;
+
+    @ApiPropertyOptional()
+    role: Role;
+}
+
+export class UpdateTeamMemberDto{
+    @ApiProperty()
+    role: Role;
+}
+
+export class AddTeamRequestDto{
+    @ApiProperty()
+    @IsString()
+    teamId: string;
+
+    @ApiProperty()
+    @IsString()
+    userId: string;
+
+    @ApiPropertyOptional()
+    status: ReqStatus
+}

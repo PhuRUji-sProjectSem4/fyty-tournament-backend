@@ -1,14 +1,76 @@
 import { Controller } from '@nestjs/common';
 import { Body, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common/decorators';
-import { Game, Team } from '@prisma/client';
-import { AddTeamDto, UpdateTeamDto } from 'src/dto/team.dto';
+import { Game, Team, TeamMember, TeamRequest, User } from '@prisma/client';
+import { Subject } from 'src/common/subject.decorator';
+import { AddTeamDto, AddTeamMemberDto, AddTeamRequestDto, UpdateTeamDto } from 'src/dto/team.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { TeamMemberService } from './Member/team-member/team-member.service';
+import { TeamRequestService } from './Request/team-request/team-request.service';
 import { TeamService } from './team.service';
 
 @Controller('team')
 export class TeamController {
-    constructor(private readonly teamService: TeamService) {}
+    constructor(
+        private readonly teamService: TeamService, 
+        private readonly teamRequestService: TeamRequestService,
+        private readonly teamMemberService: TeamMemberService,
+        ) {}
 
+    // TeamRequest
+    @Get("request")
+    async getTeamRequest(){
+        return this.teamRequestService.getTeamRequest();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("request/me")
+    async getMyTeamRequest(@Subject() subject: User){
+        return this.teamRequestService.getMyTeamRequest(subject.id);
+    }
+
+    @Get(":id/request")
+    async getRequestOfTeam(@Param("id") teamId: Team["id"]): Promise<TeamRequest[]>{
+        return this.teamRequestService.getRequestOfTeam(teamId);
+    }
+
+    @Get("request/:id")
+    async getTeamRequestById(@Param("id") requestId: TeamRequest["id"]){
+        return this.teamRequestService.getTeamRequestById(requestId);
+    }
+    
+    @Put("request/:id/declined")
+    async declined(@Param("id") requestId: TeamRequest["id"]){
+        return this.teamRequestService.declinedRequest(requestId);
+    }
+    
+    @Put("request/:id/accepted")
+    async accepted(@Param("id") requestId: TeamRequest["id"]){
+        return this.teamRequestService.acceptedRequest(requestId);
+    }
+
+    @Post("request")
+    async addTeamRequest(@Body() payload: AddTeamRequestDto): Promise<TeamRequest>{
+        return this.teamRequestService.addTeamRequest(payload); 
+    }
+
+    //TeamMember
+
+    @Get("member")
+    async getAllTeamMember(): Promise<TeamMember[]>{
+        return this.teamMemberService.getAllTeamMember();
+    }
+
+    @Get(":id/member")
+    async getTeamMember(@Param("id") teamId: Team["id"]): Promise<TeamMember[]>{
+        return this.teamMemberService.getTeamMember(teamId);
+    }
+
+    @Post("/member")
+    async addTeamMember(@Body() payload: AddTeamMemberDto): Promise<TeamMember>{
+        return this.teamMemberService.addTeamMember(payload);
+    }
+
+    //Team
     //@UseGuards(JwtAuthGuard)
     @Get()
     async getAllTeams(): Promise<Team[]>{
