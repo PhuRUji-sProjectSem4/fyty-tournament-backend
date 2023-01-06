@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { Team, TeamMember } from '@prisma/client';
-import { AddTeamMemberDto } from 'src/dto/team.dto';
+import { Team, TeamMember, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
@@ -30,11 +29,31 @@ export class TeamMemberService {
         }
     }
 
-    async addTeamMember(payload: AddTeamMemberDto): Promise<TeamMember>{
+    async addTeamMember(userId: User["id"], teamId: Team["id"]): Promise<TeamMember>{
         try{
-            return this.prisma.teamMember.create({
-                data: payload
+            const addTeamMember = await this.prisma.teamMember.create({
+                data: {
+                    userId: userId,
+                    teamId: teamId
+                }
             });
+
+            const getTeam = await this.prisma.team.findUniqueOrThrow({
+                where:{
+                    id: teamId
+                }
+            })
+
+            const updateTeamCount = await this.prisma.team.update({
+                where:{
+                    id: teamId
+                },
+                data:{
+                    currentMember: getTeam.currentMember + 1
+                }
+            })
+
+            return addTeamMember
         }
         catch(error){
             throw new BadRequestException(error.message);

@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { Game, Team, TeamStaus } from '@prisma/client';
+import { Game, Role, Team, TeamStaus } from '@prisma/client';
 import { AddTeamDto, UpdateTeamDto } from 'src/dto/team.dto';
 import { PrismaService } from 'src/prisma.service';
+import { TeamMemberService } from './Member/team-member/team-member.service';
 
 @Injectable()
 export class TeamService {
-    constructor(private readonly prisma: PrismaService){}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly teamMemberService: TeamMemberService
+        ){}
 
     async getAllTeams(): Promise<Team[]>{
         try{
@@ -37,7 +41,16 @@ export class TeamService {
 
     async addTeam(payload: AddTeamDto): Promise<Team>{
         try{
-            return await this.prisma.team.create({data: payload});
+            const createTeam =  await this.prisma.team.create({data: payload});
+
+            const addTeam = await this.prisma.teamMember.create({
+                data:{
+                    userId: createTeam.ownerId,
+                    teamId: createTeam.id
+                }
+            })
+
+            return createTeam
         }
         catch(error){
             throw new BadRequestException(error.message);

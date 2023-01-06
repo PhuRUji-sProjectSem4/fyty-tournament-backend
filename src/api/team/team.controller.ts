@@ -65,11 +65,6 @@ export class TeamController {
         return this.teamMemberService.getTeamMember(teamId);
     }
 
-    @Post("/member")
-    async addTeamMember(@Body() payload: AddTeamMemberDto): Promise<TeamMember>{
-        return this.teamMemberService.addTeamMember(payload);
-    }
-
     //Team
     //@UseGuards(JwtAuthGuard)
     @Get()
