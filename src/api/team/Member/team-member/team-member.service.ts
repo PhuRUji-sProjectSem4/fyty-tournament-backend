@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { Team, TeamMember, User } from '@prisma/client';
+import { Role, Team, TeamMember, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
+import { TeamService } from '../../team.service';
 
 @Injectable()
 export class TeamMemberService {
-    constructor(private readonly prisma: PrismaService){}
+    constructor(
+        private readonly prisma: PrismaService
+    ){}
 
     async getAllTeamMember(): Promise<TeamMember[]>{
         try{
-            return this.prisma.teamMember.findMany();
+            return await this.prisma.teamMember.findMany();
         }
         catch(error){
             throw new BadRequestException(error.message);
@@ -18,7 +21,7 @@ export class TeamMemberService {
 
     async getTeamMember(teamId: Team["id"]): Promise<TeamMember[]>{
         try{
-            return this.prisma.teamMember.findMany({
+            return await this.prisma.teamMember.findMany({
                 where:{
                     teamId: teamId
                 }
@@ -38,18 +41,14 @@ export class TeamMemberService {
                 }
             });
 
-            const getTeam = await this.prisma.team.findUniqueOrThrow({
-                where:{
-                    id: teamId
-                }
-            })
-
             const updateTeamCount = await this.prisma.team.update({
                 where:{
                     id: teamId
                 },
                 data:{
-                    currentMember: getTeam.currentMember + 1
+                    currentMember: {
+                        increment: 1
+                    }
                 }
             })
 
@@ -60,5 +59,113 @@ export class TeamMemberService {
         }
     }
 
+    async coachRole(memberId: TeamMember["id"]):Promise<TeamMember>{
+        try{
+            return await this.prisma.teamMember.update({
+                where:{
+                    id: memberId
+                },
+                data:{
+                    role: Role.COACH
+                }
+            })
+        }
+        catch(error){
+            throw new BadRequestException(error.message)
+        }
+    }
+    
+    async managerRole(memberId: TeamMember["id"]):Promise<TeamMember>{
+        try{
+            return await this.prisma.teamMember.update({
+                where:{
+                    id: memberId
+                },
+                data:{
+                    role: Role.MANAGER
+                }
+            })
+        }
+        catch(error){
+            throw new BadRequestException(error.message)
+        }
+    }
+    
+    async playerRole(memberId: TeamMember["id"]):Promise<TeamMember>{
+        try{
+            return await this.prisma.teamMember.update({
+                where:{
+                    id: memberId
+                },
+                data:{
+                    role: Role.PLAYER
+                }
+            })
+        }
+        catch(error){
+            throw new BadRequestException(error.message)
+        }
+    }
+
+    async leftTeam(TeamId: TeamMember["teamId"], UserId: TeamMember["userId"]): Promise<TeamMember>{
+        try{
+            const leftTeam =  await this.prisma.teamMember.update({
+                where:{
+                    memberInTeam:{
+                        teamId: TeamId,
+                        userId: UserId
+                    },
+                },
+                data:{
+                    role: Role.LEFT
+                }
+            });
+
+            const updateTeam = await this.prisma.team.update({
+                where:{
+                    id: TeamId
+                },
+                data:{
+                    currentMember: {
+                        decrement: 1
+                    }
+                }
+            });
+
+            return leftTeam
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
+        }
+    }
+
+    async kickMember(memberId: TeamMember["id"]): Promise<TeamMember>{
+        try{
+            const kickedMember =  await this.prisma.teamMember.update({
+                where:{
+                    id: memberId
+                },
+                data:{
+                    role: Role.KICKED
+                }
+            });
+            
+            const updateTeam = await this.prisma.team.update({
+                where:{
+                    id: kickedMember.teamId
+                },
+                data:{
+                    currentMember: {
+                        decrement: 1
+                    }
+                }
+            });
+
+            return kickedMember
+        }
+        catch(error){
+            throw new BadRequestException(error.message);    
+        }
+    }
 
 }

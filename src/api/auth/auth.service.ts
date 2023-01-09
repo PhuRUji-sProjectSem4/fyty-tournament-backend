@@ -34,7 +34,7 @@ export class AuthService {
         try{
             if( user && bcrypt.compareSync(password, user.password)){
                 const {password, ...result} = user
-                return result
+                return await result
             }
         }
         catch(error){

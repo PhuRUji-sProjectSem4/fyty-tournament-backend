@@ -65,6 +65,7 @@ enum Role {
     PLAYER
     COACH
     LEFT
+    KICKED
 }
 
 model TeamMember {
@@ -76,6 +77,8 @@ model TeamMember {
     role     Role     @default(PLAYER)
     updateAt DateTime @updatedAt
     joinAt   DateTime @default(now())
+
+    @@unique([teamId, userId], name: "memberInTeam")
 }
 
 enum ReqStatus {

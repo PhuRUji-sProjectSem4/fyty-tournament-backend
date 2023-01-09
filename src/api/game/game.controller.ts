@@ -10,22 +10,22 @@ export class GameController {
 
     @Get()
     async getGames(): Promise<Game[]>{
-        return this.gameService.getGames();
+        return await this.gameService.getGames();
     }
 
     @Get(":id")
     async getGame(@Param("id") gameId: Game['id']): Promise<Game>{
-        return this.gameService.getGame(gameId);
+        return await this.gameService.getGame(gameId);
     }
 
     @Post()
     async addGame(@Body() payload: AddGameDto): Promise<Game> {
-        return this.gameService.addGame(payload);
+        return await this.gameService.addGame(payload);
     }
 
     @Post("/all")
     async addManyGame():Promise<Game[]> {
-        return this.gameService.addManyGame();
+        return await this.gameService.addManyGame();
     }
 
     @Delete(":id")

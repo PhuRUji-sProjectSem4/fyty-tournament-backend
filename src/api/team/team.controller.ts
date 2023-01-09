@@ -19,74 +19,103 @@ export class TeamController {
     // TeamRequest
     @Get("request")
     async getTeamRequest(){
-        return this.teamRequestService.getTeamRequest();
+        return await this.teamRequestService.getTeamRequest();
     }
 
     @UseGuards(JwtAuthGuard)
     @Get("request/me")
     async getMyTeamRequest(@Subject() subject: User){
-        return this.teamRequestService.getMyTeamRequest(subject.id);
+        return await this.teamRequestService.getMyTeamRequest(subject.id);
     }
 
     @Get(":id/request")
     async getRequestOfTeam(@Param("id") teamId: Team["id"]): Promise<TeamRequest[]>{
-        return this.teamRequestService.getRequestOfTeam(teamId);
+        return await this.teamRequestService.getRequestOfTeam(teamId);
     }
 
     @Get("request/:id")
     async getTeamRequestById(@Param("id") requestId: TeamRequest["id"]){
-        return this.teamRequestService.getTeamRequestById(requestId);
+        return await this.teamRequestService.getTeamRequestById(requestId);
     }
     
     @Put("request/:id/declined")
     async declined(@Param("id") requestId: TeamRequest["id"]){
-        return this.teamRequestService.declinedRequest(requestId);
+        return await this.teamRequestService.declinedRequest(requestId);
     }
     
     @Put("request/:id/accepted")
     async accepted(@Param("id") requestId: TeamRequest["id"]){
-        return this.teamRequestService.acceptedRequest(requestId);
+        return await this.teamRequestService.acceptedRequest(requestId);
     }
 
     @Post("request")
     async addTeamRequest(@Body() payload: AddTeamRequestDto): Promise<TeamRequest>{
-        return this.teamRequestService.addTeamRequest(payload); 
+        return await this.teamRequestService.addTeamRequest(payload); 
     }
 
     //TeamMember
 
     @Get("member")
     async getAllTeamMember(): Promise<TeamMember[]>{
-        return this.teamMemberService.getAllTeamMember();
+        return await this.teamMemberService.getAllTeamMember();
     }
 
     @Get(":id/member")
     async getTeamMember(@Param("id") teamId: Team["id"]): Promise<TeamMember[]>{
-        return this.teamMemberService.getTeamMember(teamId);
+        return await this.teamMemberService.getTeamMember(teamId);
     }
 
+    @Put("member/:id/coach")
+    async updateCoachRole(@Param("id") memberId: TeamMember["id"]):Promise<TeamMember>{
+        return await this.teamMemberService.coachRole(memberId);
+    }
+    
+    @Put("member/:id/manager")
+    async updateManagerRole(@Param("id") memberId: TeamMember["id"]):Promise<TeamMember>{
+        return await this.teamMemberService.managerRole(memberId);
+    }
+
+    @Put("member/:id/player")
+    async updatePlayerRole(@Param("id") memberId: TeamMember["id"]):Promise<TeamMember>{
+        return await this.teamMemberService.playerRole(memberId);
+    }
+
+    @Put("member/:id/kick")
+    async kickMember(@Param("id") memberId: TeamMember["id"]):Promise<TeamMember>{
+        return await this.teamMemberService.kickMember(memberId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put(":id/member/leave")
+    async leftTeam(
+        @Param("id") teamId: TeamMember["teamId"],
+        @Subject() subject: User
+        ):Promise<TeamMember>{
+        return await this.teamMemberService.leftTeam(teamId, subject.id);
+    }
+    
     //Team
     //@UseGuards(JwtAuthGuard)
     @Get()
     async getAllTeams(): Promise<Team[]>{
-        return this.teamService.getAllTeams();
+        return await this.teamService.getAllTeams();
     }
 
     //@UseGuards(JwtAuthGuard)
     @Get(":id")
     async getTeam(@Param("id") teamId: Team["id"]): Promise<Team>{
-        return this.teamService.getTeam(teamId);
+        return await this.teamService.getTeam(teamId);
     }
 
     @Get("/game/:id")
     async getTeamByGameId(@Param("id") gameId: Game["id"]): Promise<Team[]>{
-        return this.teamService.getTeamByGameId(gameId);
+        return await this.teamService.getTeamByGameId(gameId);
     }
     
     //@UseGuards(JwtAuthGuard)
     @Post()
     async addTeam(@Body() payload: AddTeamDto): Promise<Team>{
-        return this.teamService.addTeam(payload);
+        return await this.teamService.addTeam(payload);
     }
 
     @Put(":id")
@@ -94,16 +123,16 @@ export class TeamController {
         @Param("id") teamId: Team["id"],
         @Body() payload: UpdateTeamDto 
     ): Promise<Team>{
-        return this.teamService.updateTeam(teamId, payload)
+        return await this.teamService.updateTeam(teamId, payload)
     }
     
     @Put("/delete/:id")
     async deleteTeam(@Param("id") teamId: Team["id"]): Promise<Team>{
-        return this.teamService.deleteTeam(teamId);
+        return await this.teamService.deleteTeam(teamId);
     }
 
     @Delete(":id")
     async realDelete(@Param("id") teamId: Team["id"]): Promise<Team>{
-        return this.teamService.realDeleteTeam(teamId);
+        return await this.teamService.realDeleteTeam(teamId);
     }
 }

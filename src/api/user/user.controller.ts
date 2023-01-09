@@ -12,19 +12,19 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Get("me")
     async getMe(@Subject() subject: User): Promise<User>{
-        return subject;
+        return await subject;
     }
 
     @UseGuards(JwtAuthGuard)
     @Get()
     async getAllUsers(): Promise<User[]>{
-        return this.userService.getAllUser();
+        return await this.userService.getAllUser();
     }
 
     @UseGuards(JwtAuthGuard)
     @Get(":id")
     async getUser(@Param("id") userId: User['id']): Promise<User>{
-        return this.userService.getUser(userId);
+        return await this.userService.getUser(userId);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -38,6 +38,6 @@ export class UserController {
     
     @Post('register')
     async addUser(@Body() payload: AddUserDto): Promise<User> {
-        return this.userService.addUser(payload);
+        return await this.userService.addUser(payload);
     }
 }
