@@ -11,10 +11,14 @@ export class AuthService {
 
     async localLogin(username: User['username'], password: User['password']){
         try{
-            const user = await this.prisma.user.findUniqueOrThrow({where: { username: username }})
-            const userInfo = await this.validateUser(user, password)
+            const user = await this.prisma.user.findUniqueOrThrow({where: { username: username }});
+            const userInfo = await this.validateUser(user, password);
+            const accessToken = this.getAccessToken(userInfo.id);
+
+            const userToken =  {...userInfo, ...accessToken};
+
+            return userToken;
             
-            return this.getAccessToken(userInfo.id);
         }
         catch(error){
             throw new BadRequestException(error.message);
