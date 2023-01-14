@@ -18,7 +18,7 @@ export class MatchService {
             if(tour.status != TourStatus.STARTED){
                 throw new BadRequestException("Tournament is not start")
             }
-            
+
             const tourJoined = await this.prisma.tournamentJoined.findMany({
                 where: {
                     id: tourId
@@ -70,6 +70,41 @@ export class MatchService {
         }
         catch (error) {
             throw new error.message
+        }
+    }
+
+    async getAllMatch(): Promise<Match[]> {
+        try{
+            return await this.prisma.match.findMany();
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
+        }
+    }
+
+    async getTourMatch(tourId: Tournament["id"]): Promise<Match[]> {
+        try{
+            return await this.prisma.match.findMany({
+                where:{
+                    tourId: tourId
+                }
+            });
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
+        }
+    }
+
+    async getMatchEach(matchId: Match["id"]): Promise<Match> {
+        try{
+            return await this.prisma.match.findUniqueOrThrow({
+                where:{
+                    id: matchId
+                }
+            });
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
         }
     }
 }
