@@ -3,6 +3,7 @@ import * as bcrypt from "bcrypt";
 import { User } from '@prisma/client';
 import { AddUserDto, UpdateUserDto } from 'src/dto/user.dto';
 import { PrismaService } from 'src/prisma.service';
+import { userDummy } from 'src/dummy/user-dummy';
 
 @Injectable()
 export class UserService {
@@ -45,6 +46,23 @@ export class UserService {
                 },
                 data: payload
             });
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
+        }
+    }
+
+    async initUser(): Promise<void>{
+        try{
+            const users = userDummy;
+            for(let user=0; user<userDummy.length; user++){
+                let userData = users[user];
+                const hashedPassword = await bcrypt.hash(userData.password, 13);
+                userData.password = hashedPassword;
+                await this.prisma.user.create({
+                    data: userData
+                })
+            }
         }
         catch(error){
             throw new BadRequestException(error.message);

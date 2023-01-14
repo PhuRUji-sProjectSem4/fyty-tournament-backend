@@ -1,17 +1,27 @@
 import { Controller, Get, Post, Put } from '@nestjs/common';
 import { Body, Delete, Param} from '@nestjs/common/decorators';
-import { Tournament, TournamentJoined } from '@prisma/client';
+import { Match, Tournament, TournamentJoined } from '@prisma/client';
 import { UpdateTeamDto } from 'src/dto/team.dto';
 import { AddTournamentDto, AddTournamentJoinDto } from 'src/dto/tournament.dto';
 import { JoinedService } from './detail/joined/joined.service';
+import { MatchService } from './match/match/match.service';
 import { TournamentService } from './tournament.service';
 
 @Controller('tournament')
 export class TournamentController {
     constructor(
         private readonly tournamentService: TournamentService,
-        private readonly joinedService: JoinedService
+        private readonly joinedService: JoinedService,
+        private readonly matchService: MatchService
     ){}
+
+    @Post(":id/init/match")
+    async initTourMatch(
+        @Param("id") tourId: Tournament["id"],
+        @Body() date: Match["date"]
+    ): Promise<any>{
+        return await this.matchService.initMatch(tourId, date);
+    }
 
     @Post("/join")
     async joinTournament(@Body() payload: AddTournamentJoinDto): Promise<TournamentJoined>{

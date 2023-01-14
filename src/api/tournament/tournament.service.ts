@@ -96,14 +96,25 @@ export class TournamentService {
 
     async startTour(tourId: Tournament["id"]): Promise<Tournament>{
         try{
-            return await this.prisma.tournament.update({
-                where:{
+            const tour = await this.prisma.tournament.findUniqueOrThrow({
+                where: {
                     id: tourId
-                },
-                data:{
-                    status: TourStatus.STARTED
                 }
             });
+
+            if(tour.currentJoin == tour.tourCap){
+                return await this.prisma.tournament.update({
+                    where:{
+                        id: tourId
+                    },
+                    data:{
+                        status: TourStatus.STARTED
+                    }
+                });
+            }
+            else{
+                throw new BadRequestException("Your Tournament is not full.")
+            }
         }
         catch(error){
             throw new BadRequestException(error.message);

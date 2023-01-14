@@ -9,13 +9,17 @@ import { UserService } from './user.service';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
+    @Post("init")
+    async initUser(): Promise<void>{
+        return await this.userService.initUser();
+    }
+
     @UseGuards(JwtAuthGuard)
     @Get("me")
     async getMe(@Subject() subject: User): Promise<User>{
         return await subject;
     }
 
-    @UseGuards(JwtAuthGuard)
     @Get()
     async getAllUsers(): Promise<User[]>{
         return await this.userService.getAllUser();

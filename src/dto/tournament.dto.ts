@@ -62,4 +62,7 @@ export class AddTournamentJoinDto {
     @ApiProperty()
     @IsString()
     teamId: string;
+
+    @ApiPropertyOptional()
+    loseCount: number;
 }

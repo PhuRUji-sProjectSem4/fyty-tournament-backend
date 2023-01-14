@@ -127,13 +127,19 @@ model Tournament {
     TournamentRank   TournamentRank[]
 }
 
+enum BRACKET {
+    UPPER
+    LOWWER
+}
+
 model Match {
     id          String        @id @default(uuid())
     tourId      String
     Tournament  Tournament    @relation(fields: [tourId], references: [id])
-    date        DateTime
+    date        DateTime?
     round       String
     pair        String
+    bracket     BRACKET       @default(UPPER)
     teamHomeId  String
     TeamHome    Team          @relation(fields: [teamHomeId], references: [id], name: "teamHome")
     teamAwayId  String
@@ -148,6 +154,7 @@ model TournamentJoined {
     Tournament Tournament @relation(fields: [tourId], references: [id])
     teamId     String
     Team       Team       @relation(fields: [teamId], references: [id])
+    loseCount  Int        @default(0)
     joinedAt   DateTime   @default(now())
 
     @@unique([tourId, teamId], name: "teamInTour")
