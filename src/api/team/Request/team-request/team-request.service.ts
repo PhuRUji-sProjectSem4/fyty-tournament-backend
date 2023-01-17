@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ReqStatus, Team, TeamRequest, User } from '@prisma/client';
+import { ReqStatus, Team, TeamMember, TeamRequest, User } from '@prisma/client';
 import { AddTeamRequestDto } from 'src/dto/team.dto';
 import { PrismaService } from 'src/prisma.service';
 import { TeamMemberService } from '../../Member/team-member/team-member.service';
@@ -103,6 +103,36 @@ export class TeamRequestService {
         }
         catch(error){
             throw new BadRequestException(error.message);
+        }
+    }
+
+    async acceptedAll(): Promise<void>{
+        try{
+            const getAllRequest = await this.prisma.teamRequest.findMany();
+
+            for(let req=0; req < getAllRequest.length; req++){
+                if(getAllRequest[req].status === ReqStatus.PENDDING){
+                    await this.acceptedRequest(getAllRequest[req].id)
+                }
+            }
+        }
+        catch(error){
+            throw new BadRequestException(error.message)
+        }
+    }
+
+    async DeletedMember(memId: User["id"]): Promise<TeamMember>{
+        try{
+            const delMember = await this.prisma.teamMember.delete({
+                where:{
+                    id: memId
+                }
+            });
+
+            return delMember
+        }
+        catch(error){
+            throw new BadRequestException(error.message)
         }
     }
 }

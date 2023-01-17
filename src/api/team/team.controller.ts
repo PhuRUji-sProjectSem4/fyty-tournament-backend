@@ -17,6 +17,16 @@ export class TeamController {
         ) {}
 
     // TeamRequest
+    @Delete("/member/:id")
+    async delMember(@Param("id") memberId: TeamMember["id"]): Promise<TeamMember>{
+        return await this.teamRequestService.DeletedMember(memberId);
+    }
+
+    @Put("/request/accAll")
+    async accAll(){
+        return await this.teamRequestService.acceptedAll();
+    }
+
     @Get("request")
     async getTeamRequest(){
         return await this.teamRequestService.getTeamRequest();

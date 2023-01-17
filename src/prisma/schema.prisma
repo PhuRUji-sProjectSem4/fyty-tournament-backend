@@ -178,7 +178,7 @@ enum WinningTeam {
 
 model MatchResult {
     id            String      @id @default(uuid())
-    matchId       String
+    matchId       String      @unique()
     Match         Match       @relation(fields: [matchId], references: [id])
     teamHomeScore Int
     teamAwayScore Int

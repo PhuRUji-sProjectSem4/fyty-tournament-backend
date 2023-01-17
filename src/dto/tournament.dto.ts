@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
-import { TourStatus } from "@prisma/client";
+import { BRACKET, TourStatus, WinningTeam } from "@prisma/client";
 import { Transform } from "class-transformer";
 import { IsNumber, IsString } from "class-validator";
 
@@ -65,4 +65,59 @@ export class AddTournamentJoinDto {
 
     @ApiPropertyOptional()
     loseCount: number;
+}
+
+export class DateMatchDto {
+    @ApiPropertyOptional()
+    @Transform(({value}) => new Date(value))
+    date: string;
+}
+
+export class CreateMatchDto{
+    @ApiProperty()
+    @IsString()
+    tourId: string;
+
+    @ApiPropertyOptional()
+    @Transform(({value}) => new Date(value))
+    date: string;
+
+    @ApiProperty()
+    @IsString()
+    round: string;
+
+    @ApiProperty()
+    @IsString()
+    pair: string;
+
+    @ApiPropertyOptional()
+    bracket: BRACKET;
+
+    @ApiProperty()
+    @IsString()
+    teamHomeId: string;
+
+    @ApiProperty()
+    @IsString()
+    teamAwayId: string;
+}
+
+export class CreateMatchResultDto{
+    @ApiProperty()
+    @IsString()
+    matchId: string;
+
+    @ApiProperty()
+    @Transform(({ value }) => Number(value))
+    teamHomeScore: number;
+
+    @ApiProperty()
+    @Transform(({ value }) => Number(value))
+    teamAwayScore: number;
+}
+
+export class DetailImgUrl{
+    @ApiProperty()
+    @IsString()
+    imgUrl: string;
 }

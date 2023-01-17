@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Put } from '@nestjs/common';
 import { Body, Delete, Param} from '@nestjs/common/decorators';
-import { Match, Tournament, TournamentJoined } from '@prisma/client';
+import { Match, MatchDetail, MatchResult, Tournament, TournamentJoined } from '@prisma/client';
 import { UpdateTeamDto } from 'src/dto/team.dto';
-import { AddTournamentDto, AddTournamentJoinDto } from 'src/dto/tournament.dto';
+import { AddTournamentDto, AddTournamentJoinDto, CreateMatchDto, CreateMatchResultDto, DateMatchDto, DetailImgUrl } from 'src/dto/tournament.dto';
 import { JoinedService } from './detail/joined/joined.service';
 import { MatchService } from './match/match/match.service';
 import { TournamentService } from './tournament.service';
@@ -14,13 +14,73 @@ export class TournamentController {
         private readonly joinedService: JoinedService,
         private readonly matchService: MatchService
     ){}
+    
+    @Get("match/:id/detail")
+    async getMatchDetail(@Param("id") matchId: Match["id"]): Promise<MatchDetail[]>{
+        return await this.matchService.getMatchDetail(matchId);
+    }
+
+    @Put("match/detail/:id")
+    async uploadImg(
+        @Param("id") detailId: MatchDetail["id"],
+        @Body() imgUrl: DetailImgUrl
+    ): Promise<MatchDetail>{
+        return await this.matchService.upload(detailId, imgUrl);
+    }    
+
+    @Get("match/detail")
+    async getAllDetail(): Promise<MatchDetail[]>{
+        return await this.matchService.getAllDetail();
+    }
+
+    @Post("/match/result")
+    async score(@Body() payload: CreateMatchResultDto): Promise<MatchResult>{
+        return await this.matchService.scoreMatch(payload);
+    }
+
+    @Get("/match/result")
+    async getAllResult(): Promise<MatchResult[]>{
+        return await this.matchService.getAllMatchResult();
+    }
+
+    @Get("/match/result/:id")
+    async getResult(@Param("id") resultId: MatchResult["id"]): Promise<MatchResult>{
+        return await this.matchService.getTourMatchResultEach(resultId);
+    }
+
+    @Get(":id/match/result")
+    async getTourResult(@Param("id") tourId: Tournament["id"]): Promise<MatchResult[]>{
+        return await this.matchService.getTourMatchResult(tourId);
+    }
 
     @Post(":id/init/match")
     async initTourMatch(
         @Param("id") tourId: Tournament["id"],
-        @Body() date: Match["date"]
+        @Body() date: DateMatchDto
     ): Promise<any>{
         return await this.matchService.initMatch(tourId, date);
+    }
+
+    @Post("match")
+    async createMatch(
+        @Body() payload: CreateMatchDto
+    ): Promise<any>{
+        return await this.matchService.createMatch(payload);
+    }
+
+    @Get("/match")
+    async getAllMatch():Promise<Match[]>{
+        return await this.matchService.getAllMatch();
+    }
+
+    @Get(":id/match")
+    async getTourMatch(@Param("id") tourId: Tournament["id"]): Promise<Match[]>{
+        return await this.matchService.getTourMatch(tourId);
+    }
+
+    @Get("match/:id")
+    async getMatchEach(@Param("id") matchId: Match["id"]): Promise<Match>{
+        return await this.matchService.getMatchEach(matchId);
     }
 
     @Post("/join")
