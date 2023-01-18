@@ -110,12 +110,6 @@ export class MatchService {
 
     async createMatch(payload: CreateMatchDto ):Promise<Match>{
         try{
-
-
-
-
-
-
             return await this.prisma.match.create({
                 data: payload
             });
@@ -128,11 +122,39 @@ export class MatchService {
     async scoreMatch(payload: CreateMatchResultDto): Promise<MatchResult>{
         try{
             let dataIn
+            const match = await this.getMatchEach(payload.matchId);
+
             if(payload.teamHomeScore > payload.teamAwayScore && (payload.teamHomeScore + payload.teamAwayScore === 3)){
                 dataIn = {...payload, winningTeam: WinningTeam.HOME}
+                const updateAwayLoser = await this.prisma.tournamentJoined.update({
+                    where:{
+                        teamInTour:{
+                            tourId: match.tourId,
+                            teamId: match.teamAwayId
+                        }
+                    },
+                    data:{
+                        loseCount:{
+                            increment: 1
+                        }
+                    }
+                });
             }
             else if(payload.teamHomeScore < payload.teamAwayScore && (payload.teamHomeScore + payload.teamAwayScore === 3)){
                 dataIn = {...payload, winningTeam: WinningTeam.AWAY}
+                const updateHomeLoser = await this.prisma.tournamentJoined.update({
+                    where:{
+                        teamInTour:{
+                            tourId: match.tourId,
+                            teamId: match.teamHomeId
+                        }
+                    },
+                    data:{
+                        loseCount:{
+                            increment: 1
+                        }
+                    }
+                });
             }
             else{
                 throw new BadRequestException("Wrong Score!!!")
