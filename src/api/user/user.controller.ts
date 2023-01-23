@@ -9,6 +9,18 @@ import { UserService } from './user.service';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
+
+    @UseGuards(JwtAuthGuard)
+    @Get("schedule/me")
+    async getSchedule(@Subject() user: User): Promise<any[]>{
+        return await this.userService.getSchedule(user);
+    }
+
+    @Put("pic")
+    async changePic(){
+        return await this.userService.updatePic();
+    }
+
     @Post("init")
     async initUser(): Promise<void>{
         return await this.userService.initUser();

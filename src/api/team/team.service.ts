@@ -41,6 +41,15 @@ export class TeamService {
 
     async addTeam(payload: AddTeamDto): Promise<Team>{
         try{
+            if(payload.coverUrl === ""){
+                const game = await this.prisma.game.findUniqueOrThrow({
+                    where:{
+                        id: payload.gameId
+                    }
+                });
+                payload.coverUrl = game.coverUrl;
+            } 
+
             const createTeam =  await this.prisma.team.create({data: payload});
 
             const addTeam = await this.prisma.teamMember.create({
