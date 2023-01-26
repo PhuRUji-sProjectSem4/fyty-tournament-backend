@@ -11,6 +11,12 @@ export class UserController {
 
 
     @UseGuards(JwtAuthGuard)
+    @Get("history/me")
+    async getHistory(@Subject() user: User): Promise<any[]>{
+        return await this.userService.getHistorys(user.id);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get("schedule/me")
     async getSchedule(@Subject() user: User): Promise<any[]>{
         return await this.userService.getSchedule(user);
@@ -32,6 +38,7 @@ export class UserController {
         return await subject;
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get()
     async getAllUsers(): Promise<User[]>{
         return await this.userService.getAllUser();

@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as bcrypt from "bcrypt";
-import { Role, User } from '@prisma/client';
+import { Role, Tournament, User } from '@prisma/client';
 import { AddUserDto, UpdateUserDto } from 'src/dto/user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { userDummy } from 'src/dummy/user-dummy';
@@ -123,6 +123,43 @@ export class UserService {
 
 
             return getAllMatchs
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
+        }
+    }
+
+    async getHistorys(userId: User["id"]): Promise<Tournament[]>{
+        try{
+            const teamMember = await this.prisma.teamMember.findMany({
+                where:{
+                    userId: userId
+                }
+            });
+
+            const tournaments = []
+
+            for(let team=0; team<teamMember.length; team++){
+                const tournamentJoined = await this.prisma.tournamentJoined.findMany({
+                    where:{
+                        teamId: teamMember[team].teamId
+                    }
+                });
+
+                for(let join=0; join<tournamentJoined.length; join++){
+                    const tournament = await this.prisma.tournament.findMany({
+                        where:{
+                            id: tournamentJoined[join].tourId
+                        }
+                    });
+
+                    tournaments.push(...tournament)
+                };
+            };
+
+            const historys = tournaments.filter((v,i,a)=>a.findIndex(v2=>(v2.id===v.id))===i);
+
+            return historys;
         }
         catch(error){
             throw new BadRequestException(error.message);

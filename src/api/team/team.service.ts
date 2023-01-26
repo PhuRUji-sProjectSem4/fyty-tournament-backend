@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { Game, Role, Team, TeamStaus } from '@prisma/client';
+import { Game, Role, Team, TeamStaus, Tournament } from '@prisma/client';
 import { AddTeamDto, UpdateTeamDto } from 'src/dto/team.dto';
 import { PrismaService } from 'src/prisma.service';
 import { TeamMemberService } from './Member/team-member/team-member.service';
@@ -106,6 +106,33 @@ export class TeamService {
         }
         catch(error){
             throw new BadRequestException(error.message);
+        }
+    }
+
+    async joinedTournament(teamId: Team["id"]): Promise<Tournament[]>{
+        try{
+            const tournamentsJoined = await this.prisma.tournamentJoined.findMany({
+                where:{
+                    teamId: teamId
+                }
+            });
+
+            let tournaments = [];
+            
+            for(let join=0; join<tournamentsJoined.length; join++){
+                const tournament = await this.prisma.tournament.findUniqueOrThrow({
+                    where: {
+                        id: tournamentsJoined[join].tourId
+                    }
+                });
+
+                tournaments.push(tournament);
+            }
+
+            return tournaments;
+        }
+        catch(error){
+            throw new BadRequestException(error.message)
         }
     }
 }

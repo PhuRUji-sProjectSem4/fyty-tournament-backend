@@ -28,7 +28,7 @@ export class GameController {
         return await this.gameService.addManyGame();
     }
 
-    @Delete(":id")
+    @UseGuards(JwtAuthGuard)
     async deleteGame(@Param("id") gameId: Game['id']): Promise<Game>{
         return await this.gameService.deleteGame(gameId);
     }
