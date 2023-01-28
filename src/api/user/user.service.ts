@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as bcrypt from "bcrypt";
-import { Role, Tournament, User } from '@prisma/client';
+import { Match, Role, Tournament, User } from '@prisma/client';
 import { AddUserDto, UpdateUserDto } from 'src/dto/user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { userDummy } from 'src/dummy/user-dummy';
@@ -89,8 +89,10 @@ export class UserService {
         }
     }
 
-    async getSchedule(user: User): Promise<any[]>{
+    async getSchedule(user: User): Promise<Match[]>{
         try{
+            const showDate = new Date(Date.now() - (1000*60*60*24)); 
+
             const teamMembers = await this.prisma.teamMember.findMany({
                 where:{
                     userId: user.id,
@@ -107,6 +109,9 @@ export class UserService {
             for(let team=0; team < teamMembers.length; team++){
                 const matchs = await this.prisma.match.findMany({
                     where:{
+                        date:{
+                            gte: showDate
+                        },
                         OR: [
                             {
                                 teamHomeId: teamMembers[team].teamId
@@ -119,6 +124,22 @@ export class UserService {
                 })
 
                 getAllMatchs.push(...matchs)
+            }
+
+            for(let match=0; match<getAllMatchs.length; match++){
+                const {teamName: homeTeamName ,...teamHome} = await this.prisma.team.findUniqueOrThrow({
+                    where: {
+                        id: getAllMatchs[match].teamHomeId
+                    }
+                })
+
+                const {teamName: awayTeamName ,...awayTeam} = await this.prisma.team.findUniqueOrThrow({
+                    where: {
+                        id: getAllMatchs[match].teamAwayId
+                    }
+                })
+
+                getAllMatchs[match] = {...getAllMatchs[match], homeTeamName, awayTeamName} 
             }
 
 

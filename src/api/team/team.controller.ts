@@ -127,7 +127,7 @@ export class TeamController {
 
     @UseGuards(JwtAuthGuard)
     @Get(":id/joined")
-    async getJoinedTour(@Param() teamId: Team["id"]): Promise<Tournament[]>{
+    async getJoinedTour(@Param("id") teamId: Team["id"]): Promise<Tournament[]>{
         return await this.teamService.joinedTournament(teamId);
     }
 

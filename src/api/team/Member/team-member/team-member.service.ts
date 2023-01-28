@@ -19,13 +19,27 @@ export class TeamMemberService {
         }
     }
 
-    async getTeamMember(teamId: Team["id"]): Promise<TeamMember[]>{
+    async getTeamMember(teamId: Team["id"]): Promise<any[]>{
         try{
-            return await this.prisma.teamMember.findMany({
+            const teamMember =  await this.prisma.teamMember.findMany({
                 where:{
                     teamId: teamId
                 }
             });
+
+            let members = []
+
+            for(let mem=0; mem<teamMember.length; mem++){
+                const {password, ...userData} = await this.prisma.user.findUniqueOrThrow({
+                    where:{
+                        id: teamMember[mem].userId
+                    }
+                });
+
+                members.push(userData)
+            };
+
+            return members
         }
         catch(error){
             throw new BadRequestException(error.message);
