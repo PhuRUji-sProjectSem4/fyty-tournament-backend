@@ -9,6 +9,14 @@ export class TournamentService {
 
     async createTour(payload: AddTournamentDto): Promise<Tournament>{
         try{
+            const game = await this.prisma.game.findUniqueOrThrow({
+                where:{
+                    id: payload.gameId
+                }
+            });
+
+            payload.coverUrl = game.coverUrl
+
             return await this.prisma.tournament.create({
                 data: payload
             });
