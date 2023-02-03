@@ -36,7 +36,7 @@ export class TeamMemberService {
                     }
                 });
 
-                members.push(userData)
+                members.push({ ...teamMember[0], userData});
             };
 
             return members
