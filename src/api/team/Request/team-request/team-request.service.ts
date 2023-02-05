@@ -47,11 +47,26 @@ export class TeamRequestService {
     
     async getRequestOfTeam(teamId: Team["id"]): Promise<TeamRequest[]>{
         try{
-            return await this.prisma.teamRequest.findMany({
+            const reqs =  await this.prisma.teamRequest.findMany({
                 where:{
-                    teamId: teamId
+                    teamId: teamId,
+                    status: ReqStatus.PENDDING
                 }
             });
+
+            let userReq = []
+
+            for(let req = 0; req<reqs.length; req++){
+                const {password, ...userData} = await this.prisma.user.findUniqueOrThrow({
+                    where: {
+                        id: reqs[req].userId
+                    }
+                });
+
+                userReq.push({...reqs[req], userData})
+            }
+
+            return userReq;
         }
         catch(error){
             throw new BadRequestException(error.message);
