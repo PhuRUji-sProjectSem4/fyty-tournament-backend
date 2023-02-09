@@ -24,7 +24,18 @@ export class TeamMemberService {
             const teamMember =  await this.prisma.teamMember.findMany({
                 where:{
                     teamId: teamId,
-                    role: Role.COACH || Role.PLAYER || Role.MANAGER
+                    OR: [
+                        {
+                            role: Role.PLAYER
+                        },
+                        {
+                            role: Role.COACH
+                        },
+                        {
+                            role: Role.MANAGER
+                        }
+                    ]
+                    
                 }
             });
 
@@ -124,6 +135,19 @@ export class TeamMemberService {
 
     async leftTeam(TeamId: TeamMember["teamId"], UserId: TeamMember["userId"]): Promise<TeamMember>{
         try{
+            const member = await this.prisma.teamMember.findUniqueOrThrow({
+                where:{
+                    memberInTeam:{
+                        teamId: TeamId,
+                        userId: UserId
+                    }
+                }
+            })
+            
+            if(member.role === Role.KICKED || member.role === Role.LEFT){
+                return
+            }
+
             const leftTeam =  await this.prisma.teamMember.update({
                 where:{
                     memberInTeam:{
