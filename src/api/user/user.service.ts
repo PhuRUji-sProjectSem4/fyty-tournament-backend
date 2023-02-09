@@ -186,4 +186,19 @@ export class UserService {
             throw new BadRequestException(error.message);
         }
     }
+
+    async getUserTour(userId: User["id"]): Promise<any[]>{
+        try{
+            const tournament = await this.prisma.tournament.findMany({
+                where:{
+                    ownerId: userId
+                }
+            })
+
+            return tournament
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
+        }
+    }
 }

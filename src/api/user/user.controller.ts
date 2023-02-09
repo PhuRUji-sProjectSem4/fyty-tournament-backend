@@ -9,6 +9,11 @@ import { UserService } from './user.service';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
+    @UseGuards(JwtAuthGuard)
+    @Get("tournamet/me")
+    async getTourByUser(@Subject() user: User): Promise<any[]>{
+        return await this.userService.getUserTour(user.id);
+    }
 
     @UseGuards(JwtAuthGuard)
     @Get("history/me")
