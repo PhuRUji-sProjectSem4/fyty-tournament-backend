@@ -23,7 +23,8 @@ export class TeamMemberService {
         try{
             const teamMember =  await this.prisma.teamMember.findMany({
                 where:{
-                    teamId: teamId
+                    teamId: teamId,
+                    role: (Role.COACH, Role.PLAYER, Role.MANAGER)
                 }
             });
 
