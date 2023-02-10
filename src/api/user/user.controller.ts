@@ -10,15 +10,21 @@ export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @UseGuards(JwtAuthGuard)
+    @Get(":id/team")
+    async getUserTeam(@Param("id")  userId: User["id"]): Promise<any[]>{
+        return await this.userService.getUserTeam(userId);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get("tournamet/me")
     async getTourByUser(@Subject() user: User): Promise<any[]>{
         return await this.userService.getUserTour(user.id);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get("history/me")
-    async getHistory(@Subject() user: User): Promise<any[]>{
-        return await this.userService.getHistorys(user.id);
+    @Get(":id/history/")
+    async getHistory(@Param("id")  userId: User["id"]): Promise<any[]>{
+        return await this.userService.getHistorys(userId);
     }
 
     @UseGuards(JwtAuthGuard)

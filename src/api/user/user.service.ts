@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as bcrypt from "bcrypt";
-import { Match, Role, Tournament, User } from '@prisma/client';
+import { Match, Role, Team, Tournament, User } from '@prisma/client';
 import { AddUserDto, UpdateUserDto } from 'src/dto/user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { userDummy } from 'src/dummy/user-dummy';
@@ -196,6 +196,33 @@ export class UserService {
             })
 
             return tournament
+        }
+        catch(error){
+            throw new BadRequestException(error.message);
+        }
+    }
+
+    async getUserTeam(userId: User["id"]): Promise<any[]>{
+        try{
+            const members = await this.prisma.teamMember.findMany({
+                where:{
+                    userId: userId
+                }
+            })
+
+            let teamMem =[]
+
+            for(let mem=0; mem<members.length; mem++){
+                const team = await this.prisma.team.findFirstOrThrow({
+                    where: {
+                        id: members[mem].teamId
+                    }
+                });
+
+                teamMem.push({team,...members[mem]});
+            }
+
+            return teamMem
         }
         catch(error){
             throw new BadRequestException(error.message);
