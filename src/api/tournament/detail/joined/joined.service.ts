@@ -71,11 +71,25 @@ export class JoinedService {
 
     async getTournamentJoin(tourId: TournamentJoined["tourId"]):Promise<TournamentJoined[]>{
         try{
-            return await this.prisma.tournamentJoined.findMany({
+            const joinTeam = await this.prisma.tournamentJoined.findMany({
                 where:{
                     tourId: tourId
                 }
             });
+
+            let teams = []
+
+            for(let team=0; team < joinTeam.length; team++){
+                const teamJoin = await this.prisma.team.findUniqueOrThrow({
+                    where:{
+                        id: joinTeam[team].teamId
+                    }
+                }); 
+
+                teams.push({...joinTeam[team] ,teamJoin})
+            }
+
+            return teams
         }
         catch(error){
             throw new BadRequestException(error.message);
