@@ -15,7 +15,9 @@ export class TournamentService {
                 }
             });
 
-            payload.coverUrl = game.coverUrl
+            if(payload.coverUrl === ""){
+                payload.coverUrl = game.coverUrl
+            }
 
             return await this.prisma.tournament.create({
                 data: payload
