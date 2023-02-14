@@ -30,7 +30,13 @@ export class TournamentService {
 
     async getAllTour():Promise<Tournament[]>{
         try{
-            return await this.prisma.tournament.findMany();
+            return await this.prisma.tournament.findMany({
+                where:{
+                    status: {
+                        not: TourStatus.CHECKING
+                    }
+                }
+            });
         }
         catch(error){
             throw new BadRequestException(error.message);
