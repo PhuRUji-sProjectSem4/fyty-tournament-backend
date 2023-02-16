@@ -86,7 +86,7 @@ export class TournamentController {
 
     @UseGuards(JwtAuthGuard)
     @Get(":id/match")
-    async getTourMatch(@Param("id") tourId: Tournament["id"]): Promise<Match[]>{
+    async getTourMatch(@Param("id") tourId: Tournament["id"]): Promise<any[]>{
         return await this.matchService.getTourMatch(tourId);
     }
 

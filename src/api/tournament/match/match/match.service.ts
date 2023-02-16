@@ -82,13 +82,33 @@ export class MatchService {
         }
     }
 
-    async getTourMatch(tourId: Tournament["id"]): Promise<Match[]> {
+    async getTourMatch(tourId: Tournament["id"]): Promise<any[]> {
         try{
-            return await this.prisma.match.findMany({
+            const matches = await this.prisma.match.findMany({
                 where:{
                     tourId: tourId
                 }
             });
+
+            const matchTeamData = []
+
+            for(let match=0; match<matches.length; match++){
+                const homeTeamData = await this.prisma.team.findUniqueOrThrow({
+                    where:{
+                        id: matches[match].teamHomeId
+                    }
+                })
+
+                const awayTeamData = await this.prisma.team.findUniqueOrThrow({
+                    where:{
+                        id: matches[match].teamAwayId
+                    }
+                })
+
+                matchTeamData.push({...matches[match], homeTeamData, awayTeamData});
+            }
+
+            return matchTeamData
         }
         catch(error){
             throw new BadRequestException(error.message);
