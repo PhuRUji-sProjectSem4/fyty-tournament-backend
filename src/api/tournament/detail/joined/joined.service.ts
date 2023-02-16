@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { TournamentJoined, TourStatus } from '@prisma/client';
+import { TournamentJoined, TourStatus, User } from '@prisma/client';
 import { AddTournamentJoinDto } from 'src/dto/tournament.dto';
 import { PrismaService } from 'src/prisma.service';
 
@@ -8,7 +8,7 @@ import { PrismaService } from 'src/prisma.service';
 export class JoinedService {
     constructor(private readonly prisma: PrismaService){}
 
-    async joinTournament(payload: AddTournamentJoinDto): Promise<TournamentJoined>{
+    async joinTournament(sender: User["id"], payload: AddTournamentJoinDto): Promise<TournamentJoined>{
         try{
             const tournament = await this.prisma.tournament.findUniqueOrThrow({
                 where:{
@@ -28,6 +28,8 @@ export class JoinedService {
                 }
             });
 
+            if(team.ownerId !== sender)
+                throw new BadRequestException("You are not a tean owner.")
             if(team.gameId !== tournament.gameId)
                 throw new BadRequestException("Your team is wrong game for this tournament.");
             if(tournament.currentJoin + 1 > tournament.tourCap)

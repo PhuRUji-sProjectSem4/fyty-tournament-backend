@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Put } from '@nestjs/common';
 import { Body, Delete, Param, UseGuards} from '@nestjs/common/decorators';
-import { Match, MatchDetail, MatchResult, Tournament, TournamentJoined } from '@prisma/client';
+import { Match, MatchDetail, MatchResult, Tournament, TournamentJoined, User } from '@prisma/client';
+import { Subject } from 'src/common/subject.decorator';
 import { UpdateTeamDto } from 'src/dto/team.dto';
 import { AddTournamentDto, AddTournamentJoinDto, CreateMatchDto, CreateMatchResultDto, DateMatchDto, DetailImgUrl } from 'src/dto/tournament.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
@@ -98,8 +99,11 @@ export class TournamentController {
 
     @UseGuards(JwtAuthGuard)
     @Post("/join")
-    async joinTournament(@Body() payload: AddTournamentJoinDto): Promise<TournamentJoined>{
-        return await this.joinedService.joinTournament(payload);
+    async joinTournament(
+        @Subject() user: User,
+        @Body() payload: AddTournamentJoinDto
+    ): Promise<TournamentJoined>{
+        return await this.joinedService.joinTournament(user.id, payload);
     }
 
     @UseGuards(JwtAuthGuard)
