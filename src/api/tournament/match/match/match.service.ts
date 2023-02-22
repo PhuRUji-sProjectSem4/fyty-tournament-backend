@@ -93,6 +93,7 @@ export class MatchService {
             const matchTeamData = []
 
             for(let match=0; match<matches.length; match++){
+
                 const homeTeamData = await this.prisma.team.findUniqueOrThrow({
                     where:{
                         id: matches[match].teamHomeId
@@ -105,7 +106,13 @@ export class MatchService {
                     }
                 })
 
-                matchTeamData.push({...matches[match], homeTeamData, awayTeamData});
+                const matchResult = await this.prisma.matchResult.findUnique({
+                    where:{
+                        matchId: matches[match].id
+                    }
+                })
+
+                matchTeamData.push({...matches[match], homeTeamData, awayTeamData, matchResult});
             }
 
             return matchTeamData
