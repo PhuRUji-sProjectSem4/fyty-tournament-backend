@@ -146,6 +146,8 @@ model Match {
     TeamAway    Team          @relation(fields: [teamAwayId], references: [id], name: "teamAway")
     MatchResult MatchResult[]
     MatchDetail MatchDetail[]
+
+    @@unique([tourId, round, pair, bracket], name: "matchDetail")
 }
 
 model TournamentJoined {
