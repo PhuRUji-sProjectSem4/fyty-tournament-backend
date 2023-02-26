@@ -137,6 +137,10 @@ export class MatchService {
 
     async createMatch(payload: CreateMatchDto ):Promise<Match>{
         try{
+            if(payload.teamHomeId === payload.teamAwayId){
+                throw new BadRequestException("Team is Duplicate")
+            }
+
             return await this.prisma.match.create({
                 data: payload
             });
