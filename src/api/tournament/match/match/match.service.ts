@@ -94,23 +94,42 @@ export class MatchService {
 
             for(let match=0; match<matches.length; match++){
 
-                const homeTeamData = await this.prisma.team.findUniqueOrThrow({
-                    where:{
-                        id: matches[match].teamHomeId
-                    }
-                })
+                // const homeTeamData = await this.prisma.team.findUniqueOrThrow({
+                //     where:{
+                //         id: matches[match].teamHomeId
+                //     }
+                // })
 
-                const awayTeamData = await this.prisma.team.findUniqueOrThrow({
-                    where:{
-                        id: matches[match].teamAwayId
-                    }
-                })
+                // const awayTeamData = await this.prisma.team.findUniqueOrThrow({
+                //     where:{
+                //         id: matches[match].teamAwayId
+                //     }
+                // })
 
-                const matchResult = await this.prisma.matchResult.findUnique({
-                    where:{
-                        matchId: matches[match].id
-                    }
-                })
+                // const matchResult = await this.prisma.matchResult.findUnique({
+                //     where:{
+                //         matchId: matches[match].id
+                //     }
+                // })
+
+                const [ homeTeamData, awayTeamData, matchResult ] = await Promise.all([
+                    this.prisma.team.findUniqueOrThrow({
+                        where:{
+                            id: matches[match].teamHomeId
+                        }
+                    }),
+                    this.prisma.team.findUniqueOrThrow({
+                        where:{
+                            id: matches[match].teamAwayId
+                        }
+                    }),
+                    this.prisma.matchResult.findUnique({
+                        where:{
+                            matchId: matches[match].id
+                        }
+                    })
+
+                ]);
 
                 matchTeamData.push({...matches[match], homeTeamData, awayTeamData, matchResult});
             }
