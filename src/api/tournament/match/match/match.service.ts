@@ -174,7 +174,7 @@ export class MatchService {
             let dataIn
             const match = await this.getMatchEach(payload.matchId);
 
-            if(payload.teamHomeScore > payload.teamAwayScore && (payload.teamHomeScore + payload.teamAwayScore === 3)){
+            if(payload.teamHomeScore > payload.teamAwayScore && (payload.teamHomeScore + payload.teamAwayScore <= 3 || payload.teamHomeScore + payload.teamAwayScore >= 2)){
                 dataIn = {...payload, winningTeam: WinningTeam.HOME}
                 const updateAwayLoser = await this.prisma.tournamentJoined.update({
                     where:{
@@ -190,7 +190,7 @@ export class MatchService {
                     }
                 });
             }
-            else if(payload.teamHomeScore < payload.teamAwayScore && (payload.teamHomeScore + payload.teamAwayScore === 3)){
+            else if(payload.teamHomeScore < payload.teamAwayScore && (payload.teamHomeScore + payload.teamAwayScore <= 3 || payload.teamHomeScore + payload.teamAwayScore >= 2)){
                 dataIn = {...payload, winningTeam: WinningTeam.AWAY}
                 const updateHomeLoser = await this.prisma.tournamentJoined.update({
                     where:{
