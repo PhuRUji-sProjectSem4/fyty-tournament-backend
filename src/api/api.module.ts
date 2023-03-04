@@ -11,7 +11,7 @@ import { UserModule } from "./user/user.module";
         GameModule,
         TeamModule,
         TournamentModule,
-        UserModule
+        UserModule,
     ],
     controllers: [],
     providers: []

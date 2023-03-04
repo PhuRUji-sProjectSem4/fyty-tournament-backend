@@ -5,6 +5,7 @@ import { env } from 'process';
 import { PrismaService } from 'src/prisma.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { GoogleStrategy } from './strategy/google.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
@@ -15,6 +16,6 @@ import { JwtStrategy } from './strategy/jwt.strategy';
             signOptions: { expiresIn: "10800s" }
         })],
     controllers: [AuthController],
-    providers: [AuthService, PrismaService, JwtStrategy],
+    providers: [AuthService, PrismaService, JwtStrategy, GoogleStrategy],
 })
 export class AuthModule { }

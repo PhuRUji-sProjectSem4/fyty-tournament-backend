@@ -25,6 +25,49 @@ export class AuthService {
         }
     }
 
+    async oAuthLogin(user: any) {
+        try {
+            if(!user){
+                throw new Error("No User Found")
+            }
+    
+            const userData = await this.prisma.user.findUnique({ 
+                where: { 
+                    email: user.email 
+                } 
+            });
+
+            if (userData !== null) {
+                const accessToken = this.getAccessToken(userData.id);
+                return {...userData, ...accessToken};
+            } 
+            else {
+                const {password, ...userInfo} = await this.oAuthRegister(user);
+                const accessToken = this.getAccessToken(userInfo.id);
+                return {...userInfo, ...accessToken};
+            }
+        }
+        catch (err) {
+            throw new Error(err.message);
+        }
+    }
+
+    private async oAuthRegister(userData: any):Promise<User> {
+        try{
+            const password = await bcrypt.hash(userData.username, 7)
+            return await this.prisma.user.create({
+                data:{
+                    username: (userData.username),
+                    email: userData.email,
+                    password: password
+                }
+            })
+        }
+        catch(error){
+            throw new BadRequestException(error.message)
+        }
+    }
+
     async getUserById(id: User["id"]) {
         try{
             return await this.prisma.user.findUniqueOrThrow({ where: { id } });
@@ -51,5 +94,7 @@ export class AuthService {
         const accessToken = jwt.sign(payload, env.JWT_SECRET_KEY);    
     
         return { accessToken };
-      }
+    }
+
+
 }
