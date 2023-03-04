@@ -11,7 +11,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
     //   callbackURL: "http://localhost:3000/auth/login/google/callback",
       clientID: "482212242241-7irqdj0b17e712en445irq6ov4nfcnvk.apps.googleusercontent.com",
       clientSecret: "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",
-      callbackURL: "https://fyty-tournament-backend-production.up.railway.app/auth/login/google/callback",
+      callbackURL: "http://localhost:3000/callback/google",
       scope: ["email", "profile"]
     });
   }
