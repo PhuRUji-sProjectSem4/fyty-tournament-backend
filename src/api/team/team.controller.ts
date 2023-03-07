@@ -133,7 +133,7 @@ export class TeamController {
 
     @UseGuards(JwtAuthGuard)
     @Get(":id")
-    async getTeam(@Param("id") teamId: Team["id"]): Promise<Team>{
+    async getTeam(@Param("id") teamId: Team["id"]): Promise<any>{
         return await this.teamService.getTeam(teamId);
     }
 

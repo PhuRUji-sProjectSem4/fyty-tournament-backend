@@ -21,9 +21,13 @@ export class TeamService {
         }
     }
 
-    async getTeam(teamId: Team['id']): Promise<Team>{
+    async getTeam(teamId: Team['id']): Promise<object>{
         try{
-            return await this.prisma.team.findUniqueOrThrow({where:{id: teamId}});
+            const team = await this.prisma.team.findUniqueOrThrow({where:{id: teamId}});
+
+            const game = await this.prisma.game.findUniqueOrThrow({where: {id: team.gameId}});
+
+            return {...team, game};
         }
         catch(error){
             throw new BadRequestException(error.message);
