@@ -43,13 +43,21 @@ export class TournamentService {
         }
     }
 
-    async getTourById(tourId: Tournament["id"]):Promise<Tournament>{
+    async getTourById(tourId: Tournament["id"]):Promise<object>{
         try{
-            return await this.prisma.tournament.findUniqueOrThrow({
+            const tournament =  await this.prisma.tournament.findUniqueOrThrow({
                 where:{
                     id: tourId
                 }
             });
+
+            const game = await this.prisma.game.findUniqueOrThrow({
+                where:{
+                    id: tournament.gameId
+                }
+            })
+
+            return {...tournament, game}
         }
         catch(error){
             throw new BadRequestException(error.message);

@@ -162,7 +162,7 @@ export class TournamentController {
 
     @UseGuards(JwtAuthGuard)
     @Get(":id")
-    async getTourById(@Param("id") tourId: Tournament["id"]): Promise<Tournament>{
+    async getTourById(@Param("id") tourId: Tournament["id"]): Promise<object>{
         return await this.tournamentService.getTourById(tourId);
     }
 

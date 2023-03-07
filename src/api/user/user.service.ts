@@ -218,8 +218,13 @@ export class UserService {
                         id: members[mem].teamId
                     }
                 });
+                const game = await this.prisma.game.findUniqueOrThrow({
+                    where: {
+                        id: team.gameId
+                    }
+                });
 
-                teamMem.push({team,...members[mem]});
+                teamMem.push({...members[mem], team, game});
             }
 
             return teamMem
