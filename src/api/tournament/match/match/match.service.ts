@@ -337,4 +337,25 @@ export class MatchService {
             throw new BadRequestException(error.message)
         }
     }
+
+    async deleteMatch(matchId: Match["id"]){
+        try{
+            const matchResult = await this.prisma.matchResult.findFirst({
+                where:{
+                    matchId: matchId
+                }
+            })
+            if(matchResult){
+                throw new Error("Cannot Delete Match that Scored.")
+            }
+            return await this.prisma.match.delete({
+                where:{
+                    id: matchId
+                }
+            })
+        }
+        catch(error){
+            throw new BadRequestException(error.message)
+        }
+    }
 }

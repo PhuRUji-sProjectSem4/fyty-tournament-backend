@@ -98,6 +98,12 @@ export class TournamentController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Delete("match/:id")
+    async delMatch(@Param("id") matchId: Match["id"]): Promise<Match>{
+        return await this.matchService.deleteMatch(matchId);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post("/join")
     async joinTournament(
         @Subject() user: User,
