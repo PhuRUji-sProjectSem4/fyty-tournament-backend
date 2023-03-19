@@ -51,13 +51,26 @@ export class TournamentService {
                 }
             });
 
-            const game = await this.prisma.game.findUniqueOrThrow({
-                where:{
-                    id: tournament.gameId
-                }
-            })
+            const [game, ownerDetail] = await Promise.all([
+                this.prisma.game.findUniqueOrThrow({
+                    where:{
+                        id: tournament.gameId
+                    }
+                }),
+                this.prisma.user.findFirstOrThrow({
+                    where:{
+                        id: tournament.ownerId
+                    }
+                })
+            ])
 
-            return {...tournament, game}
+            // const game = await this.prisma.game.findUniqueOrThrow({
+            //     where:{
+            //         id: tournament.gameId
+            //     }
+            // })
+
+            return {...tournament, game, ownerDetail}
         }
         catch(error){
             throw new BadRequestException(error.message);
